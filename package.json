@@ -2,11 +2,11 @@
   "name": "google_trends",
   "version": "1.1.0",
   "description": "A Google Trends API",
-  "bin": "index.js",
-   "scripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "index.js"
+    "start": "node index.js"
   },
+  "main": "index.js",
   "author": "A Garbin",
   "license": "ISC",
   "dependencies": {
