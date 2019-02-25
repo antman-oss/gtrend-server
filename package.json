@@ -1,0 +1,20 @@
+{
+  "name": "google_trends",
+  "version": "1.1.0",
+  "description": "A Google Trends API",
+  "bin": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "A Garbin",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "google-trends-api": "^4.7.0",
+    "nedb": "^1.8.0"
+  },
+  "pkg":{
+    "assets": ["db/*"]
+  }
+}
