@@ -20,7 +20,7 @@ function getConfig(v,d){ //value and default if missing config
     }
 }
 
-db = new Datastore({ filename: path.join(process.env.userprofile,'db/source.db'), autoload: true });
+db = new Datastore({ filename: 'db/source.db', autoload: true });
 
 var googleit = function(query) { 
     return new Promise(function(resolve, reject){
