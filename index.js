@@ -197,9 +197,10 @@ process.stdin.on('keypress', (str, key) => {
     }
 })
 
-app.listen(getConfig('port',3035), () => {
+//app.listen(getConfig('port',3035), () => {
+app.listen(os.Getenv("PORT"), () => {
  console.log("Application: gtrends mediation server")
  console.log("Author: antman-oss")
- console.log("Server running on port " + getConfig('port',3035));
+ console.log("Server running on port " + os.Getenv("PORT")//getConfig('port',3035));
  console.log("Press 'q' to QUIT.")
 });
