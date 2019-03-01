@@ -197,10 +197,17 @@ process.stdin.on('keypress', (str, key) => {
     }
 })
 
+//Added for Heroku
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3035;
+}
+
+
 //app.listen(getConfig('port',3035), () => {
-app.listen(os.Getenv("PORT"), () => {
+app.listen(port, () => {
  console.log("Application: gtrends mediation server")
  console.log("Author: antman-oss")
- console.log("Server running on port " + os.Getenv("PORT")//getConfig('port',3035));
+ console.log("Server running on port " + port);//getConfig('port',3035));
  console.log("Press 'q' to QUIT.")
 });
