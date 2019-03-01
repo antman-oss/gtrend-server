@@ -187,6 +187,7 @@ app.get("/timeline/:id", function(req, res, next){
 });
 
 //Easier Exit for non-node users. Press q to exit
+/*
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
@@ -196,6 +197,7 @@ process.stdin.on('keypress', (str, key) => {
         process.exit();
     }
 })
+*/
 
 //Added for Heroku
 let port = process.env.PORT;
