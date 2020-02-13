@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Who's Popular?</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+	</head>
+	<script id="demo" type="text/javascript">
+		$(document).ready(function() {
+			// our array of objects for some data to play with
+			var arr = [
+				['Barcelona','Champions League'],
+				['Atlético Madrid','Champions League'],
+				['Real Madrid','Champions League'],
+				['Valencia','Champions League'],
+				['Manchester City','Champions League'],
+				['Liverpool','Champions League'],
+				['Chelsea','Champions League'],
+				['Tottenham Hotspurs','Champions League'],
+				['Juventus','Champions League'],
+				['Napoli','Champions League'],
+				['Atalanta','Champions League'],
+				['Internazionale Milano','Champions League'],
+				['Bayern München','Champions League'],
+				['Borussia Dortmund','Champions League'],
+				['RB Leipzig','Champions League'],
+				['Bayer Leverkusen','Champions League'],
+				['Paris Saint-Germain','Champions League'],
+				['LOSC Lille','Champions League'],
+				['Lyon','Champions League'],
+				['Zenit','Champions League'],
+				['Lokomotiv Moskva','Champions League'],
+				['Benfica','Champions League'],
+				['Shakhtar Donetsk','Champions League'],
+				['Genk','Champions League'],
+				['Club Brugge','Champions League'],
+				['Galatasaray','Champions League'],
+				['Salzburg','Champions League'],
+				['Slavia Praha','Champions League'],
+				['Ajax','Champions League'],
+				['Olympiacos','Champions League'],
+				['GNK Dinamo','Champions League'],
+				['Crvena zvezda','Champions League']
+			]
+			const url = location.origin
+		
+			var i = 0,
+				arrLen = arr.length - 1
+				str = "";
+			// loop through all elements in the array, building a form for each object
+			for (; i <= arrLen; i++ ) {
+			str = str + `<label class="btn btn-secondary" data-name=${arr[i][0]}>
+							<input type="radio" name="col1" >${arr[i][0]}</label>`;
+			};
+			//append the markup to the DOM
+			$("#col1").html(str);
+			$("#col2").html(str);
+			
+			var selection = {
+				"col1":"",
+				"col2":""
+			}
+
+			$("#col1 .btn").on("click",function(){
+				$("#col1 .btn-info").addClass('btn-secondary').removeClass('btn-info')
+				$(this).addClass('btn-info').removeClass('btn-secondary')
+				console.log($(this).attr("data-name"))
+				selection.col1 = $(this).attr("data-name")
+
+			})
+			$("#col2 .btn").on("click",function(){
+				$("#col2 .btn-info").addClass('btn-secondary').removeClass('btn-info')
+				$(this).addClass('btn-info').removeClass('btn-secondary')
+				console.log($(this).attr("data-name"))
+				selection.col2 = $(this).attr("data-name")
+			})
+
+			$("#requestBtn").on("click",function(){
+				if (selection.col1 != selection.col2){
+					var search_body = {
+						id: selection.col1
+					}
+					//request_data(search_body,1);
+					request_complete()
+				}else{
+					alert('Your selections are the same!')
+				}
+			});
+			
+			function request_data(val,cycle){
+				$('#msg').text('Searching Google Trends for '+val.id)
+				$.ajax({
+					type: "POST",
+					url: url+'/search',
+					data: JSON.stringify(val),
+					contentType: 'application/json',
+					dataType: "json",
+					statusCode: {
+						201: function(response){
+							
+							request_data_geo(val,cycle); //Now go get geo located data
+						},
+						202: function(err){
+							$('#response').text('Sucessful: '+val.id + ' Mediation Database error: ' + JSON.stringify(err))
+						},
+						401: function(err){
+							$('#response').text('Unsucessful: '+val.id + ' Mediation Server Error: ' + JSON.stringify(err))
+						}
+					}
+				})
+			}
+			
+			function request_data_geo(val,cycle){
+				$('#msg').text('Searching Google Trends Geo for '+val.id)
+				$.ajax({
+					type: "POST",
+					url: url+'/searchgeo',
+					data: JSON.stringify(val),
+					contentType: 'application/json',
+					dataType: "json",
+					statusCode: {
+						201: function(response){
+							
+							if(cycle==1){
+								var search_body = {
+									id: selection.col2
+								}
+								request_data(search_body,2);
+							}else{
+								request_complete()
+							}
+						},
+						202: function(err){
+							$('#response').text('Sucessful: '+val.id + ' Mediation Database error: ' + JSON.stringify(err))
+						},
+						401: function(err){
+							$('#response').text('Unsucessful: '+val.id + ' Mediation Server Error: ' + JSON.stringify(err))
+						}
+					}
+				})
+			}
+
+			function request_complete(){
+				$('#msg').text('Talking to Qlik Sense - Refreshing app...')
+				$.ajax({
+					type: "POST",
+					url: url+'/searchcomplete',
+					contentType: 'application/json',
+					statusCode: {
+						201: function(response){
+							$('#msg').text('App Refresh complete.')						
+						},
+						202: function(err){
+							$('#response').text('Sucessful: Mediation Database error: ' + JSON.stringify(err))
+						},
+						401: function(err){
+							$('#response').text('Unsucessful: Mediation Server Error: ' + JSON.stringify(err))
+						}
+					}
+				})
+			}
+
+		});
+
+		//POST SECTION
+
+	</script>
+    <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron text-center">
+				<h2>
+					Who Is More Popular
+				</h2>
+				<p>
+					Using the Flexibility of Qlik Sense we can easily create Interactive Guided Analytics using Standard Web pages to request live 
+					data from Google Trends which is then automatically updated live to our Qlik Sense Application.
+				</p>
+				<p>
+					<a class="btn btn-primary btn-large" target="_blank" href="https://help.qlik.com/en-US/sense-developer/November2019/Subsystems/Mashups/Content/Sense_Mashups/mashups-introduction.htm">Learn more</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-5">
+			<div id="col1" class="btn-group btn-group-vertical float-right btn-group-toggle" data-toggle="buttons" role="group" aria-label="col1">
+				 
+				
+			</div>
+		</div>
+		<div class="col-md-2 text-center" style="margin-top: 50px">
+			<h1 class="text-warning ">
+				VS
+			</h1>
+			<br>
+			<button type="button" class="btn btn-success btn-lg" id="requestBtn">
+				GO!
+			</button>
+			<br><br>
+			<h6 id="msg" class="text-info ">
+				
+			</h6>
+
+		</div>
+		<div class="col-md-5">
+			<div id="col2" class="btn-group btn-group-vertical btn-group-toggle" data-toggle="buttons" role="group" aria-label="col2">
+			
+			</div>
+		</div>
+	
+	</div>
+</div>
+
+    
+  </body>
+</html>

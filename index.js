@@ -1,9 +1,11 @@
 const googleTrends = require('google-trends-api'); 
-var express = require("express");
-var bodyParser = require("body-parser");
-var Datastore = require('nedb')
-var fs = require('fs')
-var path = require('path')
+const express = require("express");
+const bodyParser = require("body-parser");
+const Datastore = require('nedb')
+const fs = require('fs')
+const path = require('path')
+const WebSocket = require('ws');
+let server = require('http').createServer();
 
 //Application Settings
 function getConfig(v,d){ //value and default if missing config
@@ -56,6 +58,7 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.use(express.static('public'));
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -96,7 +99,7 @@ app.post("/search", function(req, res, next){
 });
 
 app.post("/searchgeo", function(req, res, next){
-    console.log(req.body.id)
+    //console.log(req.body.id)
     var searchterm = req.body.id
     googleitGeo(req.body.id).then(function(value){
         //Add data to database
@@ -128,8 +131,9 @@ app.post("/searchgeo", function(req, res, next){
     });
 });
 
+
+
 app.delete("/search", function(req, res, next){
-    console.log(req.body.id)
     var deleteterm = req.body.id
     if (deleteterm == "*"){
          qry = ''
@@ -155,8 +159,8 @@ app.get("/", function(req, res, next){
 });
 
 app.get("/start", function(req, res, next){
-    res.sendFile(path.join(__dirname + '/index.html'));
-});
+    res.sendFile(path.join(__dirname + '/public/index.html'));
+ });
 
 app.get("/timeline/:id", function(req, res, next){
     if(req.params.id == '1'){
@@ -206,10 +210,33 @@ if (port == null || port == "") {
 }
 
 
+//WebSocker Server
+const wss = new WebSocket.Server({ server: server});
+
+server.on('request', app);
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+        //Message Back from Client
+        if(message == 'Send Handshake.'){
+            console.log('Received %s', message)
+            ws.send('Handshake Received.');
+        }
+        
+    });   
+    app.post("/searchcomplete", function(req, res, next){
+        console.log('Send Reload Command.')
+        ws.send('Reload.');
+        res.sendStatus(201);
+        res.end();
+    });
+    
+});
+
 //app.listen(getConfig('port',3035), () => {
-app.listen(port, () => {
- console.log("Application: gtrends mediation server")
- console.log("Author: antman-oss")
- console.log("Server running on port " + port);//getConfig('port',3035));
- console.log("Press 'q' to QUIT.")
+server.listen(port, () => {
+    console.log("Application: gtrends mediation server")
+    console.log("Author: antman-oss")
+    console.log("Server running on port " + port);//getConfig('port',3035));
+    //console.log("Press 'q' to QUIT.")
 });
