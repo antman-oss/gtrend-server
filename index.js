@@ -23,6 +23,7 @@ function getConfig(v,d){ //value and default if missing config
 }
 
 db = new Datastore({ filename: 'db/source.db', autoload: true });
+var M = {};
 
 var googleit = function(query) { 
     return new Promise(function(resolve, reject){
@@ -162,6 +163,13 @@ app.get("/start", function(req, res, next){
     res.sendFile(path.join(__dirname + '/public/index.html'));
  });
 
+ app.post("/searchcomplete", function(req, res, next){
+    console.log('Send Reload Command.')
+    M.ws.send('Reload.');
+    res.sendStatus(201);
+    res.end();
+});
+
 app.get("/timeline/:id", function(req, res, next){
     if(req.params.id == '1'){
         var filter = 1 //Partial
@@ -210,12 +218,14 @@ if (port == null || port == "") {
 }
 
 
+
 //WebSocker Server
 const wss = new WebSocket.Server({ server: server});
 
 server.on('request', app);
 
 wss.on('connection', function connection(ws) {
+    M.ws = ws;
     ws.on('message', function incoming(message) {
         //Message Back from Client
         if(message == 'Send Handshake.'){
@@ -223,15 +233,9 @@ wss.on('connection', function connection(ws) {
             ws.send('Handshake Received.');
         }
         
-    });   
-    app.post("/searchcomplete", function(req, res, next){
-        console.log('Send Reload Command.')
-        ws.send('Reload.');
-        res.sendStatus(201);
-        res.end();
-    });
-    
-});
+    }); 
+});  
+
 
 //app.listen(getConfig('port',3035), () => {
 server.listen(port, () => {
@@ -240,3 +244,4 @@ server.listen(port, () => {
     console.log("Server running on port " + port);//getConfig('port',3035));
     //console.log("Press 'q' to QUIT.")
 });
+
