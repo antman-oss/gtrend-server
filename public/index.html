@@ -60,7 +60,7 @@
 				str = "";
 			// loop through all elements in the array, building a form for each object
 			for (; i <= arrLen; i++ ) {
-			str = str + `<label class="btn btn-secondary" data-name=${arr[i][0]}>
+			str = str + `<label class="btn btn-secondary" data-name="${arr[i][0]}">
 							<input type="radio" name="col1" >${arr[i][0]}</label>`;
 			};
 			//append the markup to the DOM
@@ -182,16 +182,28 @@
 	<div class="row">
 		<div class="col-md-12">
 			<div class="jumbotron text-center">
-				<h2>
-					Who Is More Popular
-				</h2>
-				<p>
-					Using the Flexibility of Qlik Sense we can easily create Interactive Guided Analytics using Standard Web pages to request live 
-					data from Google Trends which is then automatically updated live to our Qlik Sense Application.
-				</p>
-				<p>
-					<a class="btn btn-primary btn-large" target="_blank" href="https://help.qlik.com/en-US/sense-developer/November2019/Subsystems/Mashups/Content/Sense_Mashups/mashups-introduction.htm">Learn more</a>
-				</p>
+				
+				<table>
+					<tr>
+						
+						<td>
+							<img src="img/logo.png" width="200" height="200">
+						</td>
+						<td>
+							<h2>
+								Who Is More Popular
+							</h2>
+							<br>
+							<p>
+								Using the Flexibility of Qlik Sense we can easily create Interactive Guided Analytics using Standard Web pages to request live 
+								data from Google Trends which is then automatically updated live to our Qlik Sense Application.
+							</p>
+							
+								<a class="btn btn-primary btn-large" target="_blank" href="https://help.qlik.com/en-US/sense-developer/November2019/Subsystems/Mashups/Content/Sense_Mashups/mashups-introduction.htm">Learn more</a>
+							
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</div>
@@ -220,6 +232,13 @@
 			<div id="col2" class="btn-group btn-group-vertical btn-group-toggle" data-toggle="buttons" role="group" aria-label="col2">
 			
 			</div>
+		</div>
+		
+		<div class="col-md-12 text-center">
+			<p>
+				Solution Diagram
+			</p>
+			<img src="img/download.png" width="800" height="500">
 		</div>
 	
 	</div>
