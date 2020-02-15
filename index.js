@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const WebSocket = require('ws');
 let server = require('http').createServer();
+var https = require('https');
 
 //Application Settings
 function getConfig(v,d){ //value and default if missing config
@@ -23,6 +24,7 @@ function getConfig(v,d){ //value and default if missing config
 }
 
 db = new Datastore({ filename: 'db/source.db', autoload: true });
+cfg = new Datastore({ filename: 'db/cfg.db', autoload: true });
 var M = {};
 
 var googleit = function(query) { 
@@ -132,8 +134,6 @@ app.post("/searchgeo", function(req, res, next){
     });
 });
 
-
-
 app.delete("/search", function(req, res, next){
     var deleteterm = req.body.id
     if (deleteterm == "*"){
@@ -165,10 +165,55 @@ app.get("/start", function(req, res, next){
 
  app.post("/searchcomplete", function(req, res, next){
     console.log('Send Reload Command.')
-    M.ws.send('Reload.');
-    res.sendStatus(201);
-    res.end();
+    //M.ws.send('Reload.');
+    //Cloud Version - update cfg via api first.
+    cfg.find({},function(err,docs){
+         
+        const options = {
+            hostname: docs[0].hostname,
+            port: "443",
+            path: docs[0].path,
+            rejectUnauthorized: false,
+            method: "POST",
+            headers: {
+                "Authorization": docs[0].bearer
+                }
+            }
+    
+    
+        var req = https.request(options, res => {
+          console.log(res.statusCode)
+          var body = '';
+          res.on('data', function(chunk) {
+            body += chunk;
+          });
+          res.on('end', function() {
+            console.log(body);
+          });
+        })
+    
+        req.on('error', error => {
+          console.error(error)
+        })
+        
+        req.write('{"appid":"' + docs[0].appid + '"}')
+        req.end()
+
+        res.sendStatus(201);
+        res.end();
+    });
 });
+
+app.post("/setcfg", function(req, res, next){
+    cfg.remove({}, { multi: true }, function (err, numRemoved){
+        cfg.insert(req.body, function (err, newDoc) {
+            console.log("Updated config.")
+            res.sendStatus(201);
+            res.end();
+        });
+    });
+    
+})
 
 app.get("/timeline/:id", function(req, res, next){
     if(req.params.id == '1'){
