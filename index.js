@@ -181,26 +181,29 @@ app.get("/start", function(req, res, next){
             }
     
     
-        var req = https.request(options, res => {
-          console.log(res.statusCode)
+        var req = https.request(options, res1 => {
+          console.log(res1.statusCode)
           var body = '';
-          res.on('data', function(chunk) {
+          res1.on('data', function(chunk) {
             body += chunk;
           });
-          res.on('end', function() {
+          res1.on('end', function() {
             console.log(body);
+            res.sendStatus(201);
+            res.end();
           });
         })
     
         req.on('error', error => {
           console.error(error)
+          res.sendStatus(403);
+          res.end();
         })
         
         req.write('{"appid":"' + docs[0].appid + '"}')
         req.end()
 
-        res.sendStatus(201);
-        res.end();
+        
     });
 });
 
